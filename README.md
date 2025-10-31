@@ -29,40 +29,54 @@ An intelligent meal planning application that helps you organize meals and gener
 
 ### Installation
 
-1. Install backend dependencies:
+**Option 1: Install all dependencies at once (recommended)**
 ```bash
-cd backend
-npm install
+npm run install:all
 ```
 
-2. Install frontend dependencies:
+**Option 2: Install manually**
 ```bash
+# Install root dependencies
+npm install
+
+# Install backend dependencies
+cd backend
+npm install
+
+# Install frontend dependencies
 cd ../frontend
 npm install
 ```
 
 ### Running the Application
 
+**Option 1: Run both servers together (recommended)**
+```bash
+npm run dev
+```
+This starts both the backend (http://localhost:3001) and frontend (http://localhost:3000) concurrently.
+
+**Option 2: Run servers separately**
+
 You'll need two terminal windows:
 
 **Terminal 1 - Backend:**
 ```bash
-cd backend
-npm run dev
+npm run dev:backend
+# OR: cd backend && npm run dev
 ```
-Server runs on http://localhost:3001
 
 **Terminal 2 - Frontend:**
 ```bash
-cd frontend
-npm run dev
+npm run dev:frontend
+# OR: cd frontend && npm run dev
 ```
-App runs on http://localhost:3000
 
 ## Project Structure
 
 ```
 meal-planner/
+├── package.json                   # Root scripts (dev, install:all)
 ├── backend/
 │   ├── src/
 │   │   ├── db/
