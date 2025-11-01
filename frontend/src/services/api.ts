@@ -32,6 +32,19 @@ export async function createCategory(data: CreateCategoryRequest): Promise<Categ
   return response.json();
 }
 
+export async function updateCategory(id: string, data: Partial<CreateCategoryRequest>): Promise<Category> {
+  const response = await fetch(`${API_BASE}/categories/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to update category');
+  }
+  return response.json();
+}
+
 export async function deleteCategory(id: string): Promise<void> {
   const response = await fetch(`${API_BASE}/categories/${id}`, {
     method: 'DELETE',

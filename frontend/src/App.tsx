@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import AddMealForm from './components/AddMealForm';
 import MealList from './components/MealList';
 import WeeklyPlanner from './components/WeeklyPlanner';
+import CategoryManager from './components/CategoryManager';
 import { Category, MealWithCategory, CreateMealRequest } from './types';
 import * as api from './services/api';
 
-type Tab = 'meals' | 'plan';
+type Tab = 'plan' | 'meals' | 'categories';
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('plan');
@@ -84,6 +85,16 @@ function App() {
               >
                 Manage Meals ({meals.length})
               </button>
+              <button
+                onClick={() => setActiveTab('categories')}
+                className={`${
+                  activeTab === 'categories'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+              >
+                Categories ({categories.length})
+              </button>
             </nav>
           </div>
         </div>
@@ -121,6 +132,11 @@ function App() {
               <MealList meals={meals} onDelete={handleDeleteMeal} />
             </div>
           </div>
+        )}
+
+        {/* Categories Tab */}
+        {activeTab === 'categories' && (
+          <CategoryManager categories={categories} onUpdate={loadData} />
         )}
       </main>
     </div>

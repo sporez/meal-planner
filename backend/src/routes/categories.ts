@@ -55,6 +55,66 @@ router.post('/', (req, res) => {
   }
 });
 
+// Update a category
+router.put('/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, color } = req.body;
+
+    if (!name && !color) {
+      return res.status(400).json({ error: 'At least one field (name or color) must be provided' });
+    }
+
+    // Check if category exists
+    const checkStmt = db.prepare('SELECT * FROM categories WHERE id = ?');
+    const existing = checkStmt.get(id) as any;
+
+    if (!existing) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+
+    const updateFields: string[] = [];
+    const values: any[] = [];
+
+    if (name !== undefined) {
+      updateFields.push('name = ?');
+      values.push(name);
+    }
+
+    if (color !== undefined) {
+      updateFields.push('color = ?');
+      values.push(color);
+    }
+
+    values.push(id);
+
+    const stmt = db.prepare(`
+      UPDATE categories
+      SET ${updateFields.join(', ')}
+      WHERE id = ?
+    `);
+
+    stmt.run(...values);
+
+    // Fetch updated category
+    const updated = checkStmt.get(id) as any;
+    const category: Category = {
+      id: updated.id,
+      name: updated.name,
+      color: updated.color,
+      createdAt: updated.created_at
+    };
+
+    res.json(category);
+  } catch (error: any) {
+    console.error('Error updating category:', error);
+    if (error.message.includes('UNIQUE constraint failed')) {
+      return res.status(409).json({ error: 'Category with this name already exists' });
+    }
+    res.status(500).json({ error: 'Failed to update category' });
+  }
+});
+
 // Delete a category
 router.delete('/:id', (req, res) => {
   try {
