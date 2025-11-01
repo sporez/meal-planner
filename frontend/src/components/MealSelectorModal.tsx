@@ -60,7 +60,7 @@ export default function MealSelectorModal({ meals, onSelect, onClose, dayName }:
           </div>
 
           {/* Search and Filter */}
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="text"
               placeholder="Search meals..."
@@ -72,7 +72,7 @@ export default function MealSelectorModal({ meals, onSelect, onClose, dayName }:
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Categories</option>
               {categories.map(cat => (

@@ -71,15 +71,15 @@ function App() {
           <h1 className="text-3xl font-bold text-gray-900">Meal Planner</h1>
 
           {/* Tabs */}
-          <div className="mt-4 border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
+          <div className="mt-4 border-b border-gray-200 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+            <nav className="-mb-px flex space-x-4 sm:space-x-8 min-w-max sm:min-w-0">
               <button
                 onClick={() => setActiveTab('plan')}
                 className={`${
                   activeTab === 'plan'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+                } whitespace-nowrap py-4 px-2 sm:px-1 border-b-2 font-medium text-sm transition-colors`}
               >
                 Plan Week
               </button>
@@ -89,9 +89,10 @@ function App() {
                   activeTab === 'meals'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+                } whitespace-nowrap py-4 px-2 sm:px-1 border-b-2 font-medium text-sm transition-colors`}
               >
-                Manage Meals ({meals.length})
+                <span className="hidden sm:inline">Manage Meals ({meals.length})</span>
+                <span className="sm:hidden">Meals ({meals.length})</span>
               </button>
               <button
                 onClick={() => setActiveTab('categories')}
@@ -99,7 +100,7 @@ function App() {
                   activeTab === 'categories'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+                } whitespace-nowrap py-4 px-2 sm:px-1 border-b-2 font-medium text-sm transition-colors`}
               >
                 Categories ({categories.length})
               </button>
@@ -109,9 +110,10 @@ function App() {
                   activeTab === 'saved'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+                } whitespace-nowrap py-4 px-2 sm:px-1 border-b-2 font-medium text-sm transition-colors`}
               >
-                Saved Plans
+                <span className="hidden sm:inline">Saved Plans</span>
+                <span className="sm:hidden">Saved</span>
               </button>
             </nav>
           </div>
