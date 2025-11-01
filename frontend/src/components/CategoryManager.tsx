@@ -91,9 +91,9 @@ export default function CategoryManager({ categories, onUpdate }: CategoryManage
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Manage Categories</h2>
+        <h2 className="text-2xl font-bold dark:text-white">Manage Categories</h2>
         {!isAdding && !editingId && (
           <button
             onClick={handleStartAdd}
@@ -190,7 +190,7 @@ export default function CategoryManager({ categories, onUpdate }: CategoryManage
       {/* Categories List */}
       <div className="space-y-2">
         {categories.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             No categories yet. Add your first category above!
           </div>
         ) : (

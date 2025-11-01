@@ -53,7 +53,7 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-4">Edit Meal</h2>
 
@@ -73,7 +73,7 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
                 id="edit-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={isSubmitting}
                 autoFocus
               />
@@ -87,7 +87,7 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
                 id="edit-category"
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={isSubmitting}
               >
                 {categories.map((cat) => (
@@ -126,10 +126,10 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
                 id="edit-hasLeftovers"
                 checked={hasLeftovers}
                 onChange={(e) => setHasLeftovers(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded"
                 disabled={isSubmitting}
               />
-              <label htmlFor="edit-hasLeftovers" className="ml-2 block text-sm text-gray-700">
+              <label htmlFor="edit-hasLeftovers" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                 Has leftovers (will be scheduled for 2 consecutive days)
               </label>
             </div>

@@ -66,8 +66,8 @@ export default function SavedPlans({ onEdit }: SavedPlansProps) {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="text-center py-12 text-gray-500">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
           Loading saved plans...
         </div>
       </div>
@@ -75,9 +75,9 @@ export default function SavedPlans({ onEdit }: SavedPlansProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold">Saved Meal Plans</h2>
+        <h2 className="text-2xl font-bold dark:text-white">Saved Meal Plans</h2>
         <p className="text-gray-600 text-sm mt-1">
           View and manage your saved weekly meal plans
         </p>
@@ -90,7 +90,7 @@ export default function SavedPlans({ onEdit }: SavedPlansProps) {
       )}
 
       {plans.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
           <svg
             className="mx-auto h-12 w-12 text-gray-400 mb-4"
             fill="none"
@@ -115,11 +115,11 @@ export default function SavedPlans({ onEdit }: SavedPlansProps) {
             return (
               <div
                 key={plan.id}
-                className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                className="border border-gray-200 dark:border-gray-700 dark:bg-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
               >
                 {/* Plan Header */}
                 <div
-                  className="p-4 bg-gray-50 flex items-center justify-between cursor-pointer"
+                  className="p-4 bg-gray-50 dark:bg-gray-700 flex items-center justify-between cursor-pointer"
                   onClick={() => setExpandedPlanId(isExpanded ? null : plan.id)}
                 >
                   <div>
@@ -188,9 +188,9 @@ export default function SavedPlans({ onEdit }: SavedPlansProps) {
                         return (
                           <div
                             key={day}
-                            className="border border-gray-200 rounded-lg p-3"
+                            className="border border-gray-200 dark:border-gray-700 dark:bg-gray-700 rounded-lg p-3"
                           >
-                            <div className="text-xs font-semibold text-gray-600 mb-1">
+                            <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
                               {day}
                             </div>
 

@@ -177,9 +177,9 @@ export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlanne
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-4">Weekly Meal Planner</h2>
+        <h2 className="text-2xl font-bold dark:text-white mb-4">Weekly Meal Planner</h2>
 
         {/* Week Selector */}
         <div className="flex items-center gap-4 mb-4">
@@ -256,7 +256,7 @@ export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlanne
               return (
                 <div
                   key={day}
-                  className="border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow"
+                  className="border border-gray-200 dark:border-gray-700 dark:bg-gray-700 rounded-lg p-3 hover:shadow-md transition-shadow"
                 >
                   <div className="text-xs font-semibold text-gray-600 mb-1">
                     {day}
@@ -339,7 +339,7 @@ export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlanne
 
       {/* Empty State */}
       {!generatedPlan && (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
           <svg
             className="mx-auto h-12 w-12 text-gray-400 mb-4"
             fill="none"
