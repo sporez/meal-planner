@@ -191,7 +191,7 @@ function App() {
 
             {/* Meal List - Right Columns */}
             <div className="lg:col-span-2">
-              <MealList meals={meals} onEdit={setEditingMeal} onDelete={handleDeleteMeal} />
+              <MealList meals={meals} onEdit={setEditingMeal} onDelete={handleDeleteMeal} onStatsReset={loadData} />
             </div>
           </div>
         )}

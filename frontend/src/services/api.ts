@@ -108,6 +108,17 @@ export async function deleteMeal(id: string): Promise<void> {
   }
 }
 
+export async function resetMealStats(): Promise<{ message: string; mealsUpdated: number }> {
+  const response = await fetch(`${API_BASE}/meals/reset-stats`, {
+    method: 'POST',
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to reset meal statistics');
+  }
+  return response.json();
+}
+
 // Meal Plans
 export async function generateMealPlan(weekStartDate: string): Promise<MealPlan> {
   const response = await fetch(`${API_BASE}/meal-plans/generate`, {

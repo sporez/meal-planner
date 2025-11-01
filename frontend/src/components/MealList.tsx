@@ -1,16 +1,19 @@
 import { useState, useMemo } from 'react';
 import { MealWithCategory } from '../types';
+import * as api from '../services/api';
 
 interface MealListProps {
   meals: MealWithCategory[];
   onEdit: (meal: MealWithCategory) => void;
   onDelete: (id: string) => Promise<void>;
+  onStatsReset?: () => void;
 }
 
-export default function MealList({ meals, onEdit, onDelete }: MealListProps) {
+export default function MealList({ meals, onEdit, onDelete, onStatsReset }: MealListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
+  const [isResetting, setIsResetting] = useState(false);
 
   const handleDelete = async (id: string, name: string) => {
     if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
@@ -19,6 +22,23 @@ export default function MealList({ meals, onEdit, onDelete }: MealListProps) {
       } catch (err) {
         alert('Failed to delete meal');
       }
+    }
+  };
+
+  const handleResetStats = async () => {
+    if (!window.confirm('Are you sure you want to reset all meal statistics? This will clear "Last Served" dates and reset "Times Served" counts to 0 for ALL meals. This action cannot be undone.')) {
+      return;
+    }
+
+    setIsResetting(true);
+    try {
+      const result = await api.resetMealStats();
+      alert(`Success! Reset statistics for ${result.mealsUpdated} meals.`);
+      onStatsReset?.();
+    } catch (err: any) {
+      alert(err.message || 'Failed to reset meal statistics');
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -64,7 +84,17 @@ export default function MealList({ meals, onEdit, onDelete }: MealListProps) {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-      <h2 className="text-2xl font-bold mb-4 dark:text-white">Your Meals ({meals.length})</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold dark:text-white">Your Meals ({meals.length})</h2>
+        <button
+          onClick={handleResetStats}
+          disabled={isResetting || meals.length === 0}
+          className="px-3 py-1 text-sm bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded hover:bg-yellow-200 dark:hover:bg-yellow-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          title="Reset all meal statistics (last served date and times served)"
+        >
+          {isResetting ? 'Resetting...' : 'Reset Stats'}
+        </button>
+      </div>
 
       {/* Search and Filters */}
       <div className="mb-4 space-y-3">

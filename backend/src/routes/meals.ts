@@ -295,4 +295,25 @@ router.delete('/:id', (req, res) => {
   }
 });
 
+// Reset all meal statistics (lastServedDate and timesServed)
+router.post('/reset-stats', (req, res) => {
+  try {
+    const stmt = db.prepare(`
+      UPDATE meals
+      SET last_served_date = NULL,
+          times_served = 0
+    `);
+
+    const info = stmt.run();
+
+    res.json({
+      message: 'Meal statistics reset successfully',
+      mealsUpdated: info.changes
+    });
+  } catch (error) {
+    console.error('Error resetting meal stats:', error);
+    res.status(500).json({ error: 'Failed to reset meal statistics' });
+  }
+});
+
 export default router;
