@@ -106,7 +106,7 @@ export default function CategoryManager({ categories, onUpdate }: CategoryManage
 
       {/* Add/Edit Form */}
       {(isAdding || editingId) && (
-        <form onSubmit={handleSubmit} className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+        <form onSubmit={handleSubmit} className="mb-6 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700">
           <h3 className="font-semibold mb-4">
             {editingId ? 'Edit Category' : 'Add New Category'}
           </h3>
@@ -119,7 +119,7 @@ export default function CategoryManager({ categories, onUpdate }: CategoryManage
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Category Name
               </label>
               <input
@@ -127,7 +127,7 @@ export default function CategoryManager({ categories, onUpdate }: CategoryManage
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="e.g., Chicken, Seafood, Breakfast"
                 disabled={isSubmitting}
                 autoFocus
@@ -135,7 +135,7 @@ export default function CategoryManager({ categories, onUpdate }: CategoryManage
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Color
               </label>
               <div className="flex flex-wrap gap-2 mb-2">
@@ -178,7 +178,7 @@ export default function CategoryManager({ categories, onUpdate }: CategoryManage
                 type="button"
                 onClick={handleCancel}
                 disabled={isSubmitting}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:bg-gray-100 transition-colors"
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 disabled:bg-gray-100 transition-colors"
               >
                 Cancel
               </button>
@@ -197,28 +197,28 @@ export default function CategoryManager({ categories, onUpdate }: CategoryManage
           categories.map((category) => (
             <div
               key={category.id}
-              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-750 transition-colors"
             >
               <div className="flex items-center gap-3">
                 <div
                   className="w-8 h-8 rounded"
                   style={{ backgroundColor: category.color }}
                 />
-                <span className="font-medium">{category.name}</span>
+                <span className="font-medium dark:text-white">{category.name}</span>
               </div>
 
               <div className="flex gap-2">
                 <button
                   onClick={() => handleStartEdit(category)}
                   disabled={isAdding || editingId !== null}
-                  className="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded disabled:text-gray-400 transition-colors"
+                  className="px-3 py-1 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900 rounded disabled:text-gray-400 transition-colors"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(category.id, category.name)}
                   disabled={isAdding || editingId !== null}
-                  className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded disabled:text-gray-400 transition-colors"
+                  className="px-3 py-1 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900 rounded disabled:text-gray-400 transition-colors"
                 >
                   Delete
                 </button>

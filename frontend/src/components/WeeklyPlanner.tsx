@@ -185,7 +185,7 @@ export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlanne
 
         {/* Week Selector */}
         <div className="flex items-center gap-4 mb-4">
-          <label htmlFor="week-start" className="text-sm font-medium text-gray-700">
+          <label htmlFor="week-start" className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Week Starting (Sunday):
           </label>
           <input
@@ -263,10 +263,10 @@ export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlanne
                   key={day}
                   className="border border-gray-200 dark:border-gray-700 dark:bg-gray-700 rounded-lg p-3 hover:shadow-md transition-shadow"
                 >
-                  <div className="text-xs font-semibold text-gray-600 mb-1">
+                  <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                     {day}
                   </div>
-                  <div className="text-xs text-gray-500 mb-2">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                     {formatDate(weekStartDate, index)}
                   </div>
 
@@ -307,7 +307,7 @@ export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlanne
                         )}
                       </div>
 
-                      <div className="text-xs text-gray-500 mb-3">
+                      <div className="text-xs text-gray-500 dark:text-gray-300 mb-3">
                         Served {meal.timesServed}x
                         {meal.lastServedDate && (
                           <span className="block">

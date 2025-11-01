@@ -65,7 +65,7 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
             )}
 
             <div>
-              <label htmlFor="edit-name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="edit-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Meal Name
               </label>
               <input
@@ -80,7 +80,7 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
             </div>
 
             <div>
-              <label htmlFor="edit-category" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="edit-category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Category
               </label>
               <select
@@ -99,12 +99,12 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Difficulty
               </label>
               <div className="flex gap-4">
                 {(['easy', 'medium', 'hard'] as Difficulty[]).map((diff) => (
-                  <label key={diff} className="flex items-center">
+                  <label key={diff} className="flex items-center dark:text-gray-300">
                     <input
                       type="radio"
                       name="edit-difficulty"
@@ -120,7 +120,7 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
               </div>
             </div>
 
-            <div className="flex items-center">
+            <div className="flex items-center dark:text-gray-300">
               <input
                 type="checkbox"
                 id="edit-hasLeftovers"
@@ -146,7 +146,7 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 disabled:bg-gray-100 transition-colors"
+                className="flex-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 rounded-md hover:bg-gray-300 disabled:bg-gray-100 transition-colors"
               >
                 Cancel
               </button>
