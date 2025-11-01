@@ -26,12 +26,26 @@ export function initializeDatabase() {
       name TEXT NOT NULL,
       category_id TEXT NOT NULL,
       difficulty TEXT NOT NULL CHECK(difficulty IN ('easy', 'medium', 'hard')),
+      has_leftovers INTEGER NOT NULL DEFAULT 0,
       last_served_date TEXT,
       times_served INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL,
       FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
     )
   `);
+
+  // Migration: Add has_leftovers column to existing meals table
+  try {
+    const columns = db.pragma('table_info(meals)');
+    const hasLeftoversExists = columns.some((col: any) => col.name === 'has_leftovers');
+
+    if (!hasLeftoversExists) {
+      db.exec('ALTER TABLE meals ADD COLUMN has_leftovers INTEGER NOT NULL DEFAULT 0');
+      console.log('Migration: Added has_leftovers column to meals table');
+    }
+  } catch (error) {
+    // Table might not exist yet, which is fine
+  }
 
   // Create meal plans table
   db.exec(`

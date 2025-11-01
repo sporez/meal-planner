@@ -12,6 +12,7 @@ export interface Meal {
   name: string;
   categoryId: string;
   difficulty: Difficulty;
+  hasLeftovers: boolean;
   lastServedDate: string | null;
   timesServed: number;
   createdAt: string;
@@ -26,12 +27,14 @@ export interface CreateMealRequest {
   name: string;
   categoryId: string;
   difficulty: Difficulty;
+  hasLeftovers?: boolean;
 }
 
 export interface UpdateMealRequest {
   name?: string;
   categoryId?: string;
   difficulty?: Difficulty;
+  hasLeftovers?: boolean;
 }
 
 export interface MealPlan {

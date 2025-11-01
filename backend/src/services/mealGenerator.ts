@@ -31,6 +31,7 @@ export class MealGenerator {
 
   /**
    * Generate a week of meals (7 days)
+   * Handles leftover meals by assigning them to 2 consecutive days
    */
   generateWeek(weekStartDate: string): MealWithCategory[] {
     const allMeals = this.getAllMeals();
@@ -47,7 +48,8 @@ export class MealGenerator {
       const availableMeals = this.filterAvailableMeals(
         allMeals,
         selectedMeals,
-        usedCategories
+        usedCategories,
+        dayIndex
       );
 
       if (availableMeals.length === 0) {
@@ -60,11 +62,23 @@ export class MealGenerator {
           const meal = this.selectRandomFromTop(fallbackMeals, 3);
           selectedMeals.push(meal);
           usedCategories.set(meal.categoryId, (usedCategories.get(meal.categoryId) || 0) + 1);
+
+          // If this meal has leftovers and there's room for another day, add it again
+          if (meal.hasLeftovers && dayIndex < 6) {
+            selectedMeals.push(meal);
+            dayIndex++; // Skip next day since it's leftovers
+          }
           continue;
         } else {
           // Absolute fallback - allow repeats
           const meal = allMeals[Math.floor(Math.random() * allMeals.length)];
           selectedMeals.push(meal);
+
+          // If this meal has leftovers and there's room for another day, add it again
+          if (meal.hasLeftovers && dayIndex < 6) {
+            selectedMeals.push(meal);
+            dayIndex++; // Skip next day since it's leftovers
+          }
           continue;
         }
       }
@@ -85,6 +99,12 @@ export class MealGenerator {
 
       selectedMeals.push(selectedMeal);
       usedCategories.set(selectedMeal.categoryId, (usedCategories.get(selectedMeal.categoryId) || 0) + 1);
+
+      // If this meal has leftovers and there's room for another day, add it again for the next day
+      if (selectedMeal.hasLeftovers && dayIndex < 6) {
+        selectedMeals.push(selectedMeal);
+        dayIndex++; // Skip next iteration since it's leftovers
+      }
     }
 
     return selectedMeals;
@@ -100,6 +120,7 @@ export class MealGenerator {
         m.name,
         m.category_id,
         m.difficulty,
+        m.has_leftovers,
         m.last_served_date,
         m.times_served,
         m.created_at,
@@ -117,6 +138,7 @@ export class MealGenerator {
       name: row.name,
       categoryId: row.category_id,
       difficulty: row.difficulty,
+      hasLeftovers: Boolean(row.has_leftovers),
       lastServedDate: row.last_served_date,
       timesServed: row.times_served,
       createdAt: row.created_at,
@@ -131,7 +153,8 @@ export class MealGenerator {
   private filterAvailableMeals(
     allMeals: MealWithCategory[],
     selectedMeals: MealWithCategory[],
-    usedCategories: Map<string, number>
+    usedCategories: Map<string, number>,
+    dayIndex: number
   ): MealWithCategory[] {
     const now = new Date();
     const previousMeal = selectedMeals[selectedMeals.length - 1];
@@ -139,6 +162,12 @@ export class MealGenerator {
     return allMeals.filter(meal => {
       // Don't use same meal twice in same week
       if (selectedMeals.find(m => m.id === meal.id)) {
+        return false;
+      }
+
+      // If this is a leftover meal and we're on day 6 (Sunday), skip it
+      // because it needs 2 consecutive days
+      if (meal.hasLeftovers && dayIndex === 6) {
         return false;
       }
 

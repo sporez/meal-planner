@@ -14,6 +14,7 @@ router.get('/', (req, res) => {
         m.name,
         m.category_id,
         m.difficulty,
+        m.has_leftovers,
         m.last_served_date,
         m.times_served,
         m.created_at,
@@ -31,6 +32,7 @@ router.get('/', (req, res) => {
       name: row.name,
       categoryId: row.category_id,
       difficulty: row.difficulty,
+      hasLeftovers: Boolean(row.has_leftovers),
       lastServedDate: row.last_served_date,
       timesServed: row.times_served,
       createdAt: row.created_at,
@@ -56,6 +58,7 @@ router.get('/:id', (req, res) => {
         m.name,
         m.category_id,
         m.difficulty,
+        m.has_leftovers,
         m.last_served_date,
         m.times_served,
         m.created_at,
@@ -77,6 +80,7 @@ router.get('/:id', (req, res) => {
       name: row.name,
       categoryId: row.category_id,
       difficulty: row.difficulty,
+      hasLeftovers: Boolean(row.has_leftovers),
       lastServedDate: row.last_served_date,
       timesServed: row.times_served,
       createdAt: row.created_at,
@@ -94,7 +98,7 @@ router.get('/:id', (req, res) => {
 // Create a new meal
 router.post('/', (req, res) => {
   try {
-    const { name, categoryId, difficulty } = req.body as CreateMealRequest;
+    const { name, categoryId, difficulty, hasLeftovers } = req.body as CreateMealRequest;
 
     if (!name || !categoryId || !difficulty) {
       return res.status(400).json({
@@ -118,13 +122,14 @@ router.post('/', (req, res) => {
 
     const id = randomUUID();
     const createdAt = new Date().toISOString();
+    const hasLeftoversValue = hasLeftovers ? 1 : 0;
 
     const stmt = db.prepare(`
-      INSERT INTO meals (id, name, category_id, difficulty, times_served, created_at)
-      VALUES (?, ?, ?, ?, 0, ?)
+      INSERT INTO meals (id, name, category_id, difficulty, has_leftovers, times_served, created_at)
+      VALUES (?, ?, ?, ?, ?, 0, ?)
     `);
 
-    stmt.run(id, name, categoryId, difficulty, createdAt);
+    stmt.run(id, name, categoryId, difficulty, hasLeftoversValue, createdAt);
 
     // Fetch the created meal with category info
     const getMealStmt = db.prepare(`
@@ -133,6 +138,7 @@ router.post('/', (req, res) => {
         m.name,
         m.category_id,
         m.difficulty,
+        m.has_leftovers,
         m.last_served_date,
         m.times_served,
         m.created_at,
@@ -150,6 +156,7 @@ router.post('/', (req, res) => {
       name: row.name,
       categoryId: row.category_id,
       difficulty: row.difficulty,
+      hasLeftovers: Boolean(row.has_leftovers),
       lastServedDate: row.last_served_date,
       timesServed: row.times_served,
       createdAt: row.created_at,
@@ -210,6 +217,11 @@ router.put('/:id', (req, res) => {
       values.push(updates.difficulty);
     }
 
+    if (updates.hasLeftovers !== undefined) {
+      updateFields.push('has_leftovers = ?');
+      values.push(updates.hasLeftovers ? 1 : 0);
+    }
+
     if (updateFields.length === 0) {
       return res.status(400).json({ error: 'No valid fields to update' });
     }
@@ -231,6 +243,7 @@ router.put('/:id', (req, res) => {
         m.name,
         m.category_id,
         m.difficulty,
+        m.has_leftovers,
         m.last_served_date,
         m.times_served,
         m.created_at,
@@ -248,6 +261,7 @@ router.put('/:id', (req, res) => {
       name: row.name,
       categoryId: row.category_id,
       difficulty: row.difficulty,
+      hasLeftovers: Boolean(row.has_leftovers),
       lastServedDate: row.last_served_date,
       timesServed: row.times_served,
       createdAt: row.created_at,
