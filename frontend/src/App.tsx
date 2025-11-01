@@ -4,10 +4,11 @@ import MealList from './components/MealList';
 import WeeklyPlanner from './components/WeeklyPlanner';
 import CategoryManager from './components/CategoryManager';
 import EditMealModal from './components/EditMealModal';
+import SavedPlans from './components/SavedPlans';
 import { Category, MealWithCategory, CreateMealRequest, UpdateMealRequest } from './types';
 import * as api from './services/api';
 
-type Tab = 'plan' | 'meals' | 'categories';
+type Tab = 'plan' | 'meals' | 'categories' | 'saved';
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('plan');
@@ -102,6 +103,16 @@ function App() {
               >
                 Categories ({categories.length})
               </button>
+              <button
+                onClick={() => setActiveTab('saved')}
+                className={`${
+                  activeTab === 'saved'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+              >
+                Saved Plans
+              </button>
             </nav>
           </div>
         </div>
@@ -144,6 +155,11 @@ function App() {
         {/* Categories Tab */}
         {activeTab === 'categories' && (
           <CategoryManager categories={categories} onUpdate={loadData} />
+        )}
+
+        {/* Saved Plans Tab */}
+        {activeTab === 'saved' && (
+          <SavedPlans />
         )}
       </main>
 

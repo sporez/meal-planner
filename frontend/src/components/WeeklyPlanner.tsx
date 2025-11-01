@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { MealPlan, MealWithCategory } from '../types';
 import * as api from '../services/api';
 
-const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 interface WeeklyPlannerProps {
   onPlanSaved?: () => void;
 }
 
 export default function WeeklyPlanner({ onPlanSaved }: WeeklyPlannerProps) {
-  const [weekStartDate, setWeekStartDate] = useState<string>(getNextMonday());
+  const [weekStartDate, setWeekStartDate] = useState<string>(getNextSunday());
   const [generatedPlan, setGeneratedPlan] = useState<MealPlan | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -79,7 +79,7 @@ export default function WeeklyPlanner({ onPlanSaved }: WeeklyPlannerProps) {
         {/* Week Selector */}
         <div className="flex items-center gap-4 mb-4">
           <label htmlFor="week-start" className="text-sm font-medium text-gray-700">
-            Week Starting (Monday):
+            Week Starting (Sunday):
           </label>
           <input
             type="date"
@@ -233,15 +233,15 @@ export default function WeeklyPlanner({ onPlanSaved }: WeeklyPlannerProps) {
 }
 
 /**
- * Get the next Monday's date in YYYY-MM-DD format
+ * Get the next Sunday's date in YYYY-MM-DD format
  */
-function getNextMonday(): string {
+function getNextSunday(): string {
   const today = new Date();
   const dayOfWeek = today.getDay();
-  const daysUntilMonday = dayOfWeek === 0 ? 1 : dayOfWeek === 1 ? 0 : 8 - dayOfWeek;
+  const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
 
-  const nextMonday = new Date(today);
-  nextMonday.setDate(today.getDate() + daysUntilMonday);
+  const nextSunday = new Date(today);
+  nextSunday.setDate(today.getDate() + daysUntilSunday);
 
-  return nextMonday.toISOString().split('T')[0];
+  return nextSunday.toISOString().split('T')[0];
 }

@@ -9,7 +9,7 @@ const router = Router();
 /**
  * Generate a new meal plan for a specific week
  * POST /api/meal-plans/generate
- * Body: { weekStartDate: "2024-01-01" } (Monday's date)
+ * Body: { weekStartDate: "2024-01-01" } (Sunday's date)
  */
 router.post('/generate', (req, res) => {
   try {
@@ -19,11 +19,11 @@ router.post('/generate', (req, res) => {
       return res.status(400).json({ error: 'weekStartDate is required (YYYY-MM-DD format)' });
     }
 
-    // Validate it's a Monday (parse in local time to avoid timezone issues)
+    // Validate it's a Sunday (parse in local time to avoid timezone issues)
     const [year, month, day] = weekStartDate.split('-').map(Number);
     const date = new Date(year, month - 1, day); // month is 0-indexed
-    if (date.getDay() !== 1) {
-      return res.status(400).json({ error: 'weekStartDate must be a Monday' });
+    if (date.getDay() !== 0) {
+      return res.status(400).json({ error: 'weekStartDate must be a Sunday' });
     }
 
     const generator = new MealGenerator();
