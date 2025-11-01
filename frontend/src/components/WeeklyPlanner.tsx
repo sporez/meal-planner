@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MealPlan, MealWithCategory } from '../types';
 import * as api from '../services/api';
+import MealSelectorModal from './MealSelectorModal';
 
 const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -15,6 +16,22 @@ export default function WeeklyPlanner({ onPlanSaved }: WeeklyPlannerProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [allMeals, setAllMeals] = useState<MealWithCategory[]>([]);
+  const [selectingDayIndex, setSelectingDayIndex] = useState<number | null>(null);
+
+  // Load all meals for swapping
+  useEffect(() => {
+    loadMeals();
+  }, []);
+
+  const loadMeals = async () => {
+    try {
+      const meals = await api.getMeals();
+      setAllMeals(meals);
+    } catch (err) {
+      console.error('Failed to load meals:', err);
+    }
+  };
 
   const handleGenerate = async () => {
     setError('');
@@ -54,6 +71,77 @@ export default function WeeklyPlanner({ onPlanSaved }: WeeklyPlannerProps) {
   const handleRegenerate = () => {
     setGeneratedPlan(null);
     handleGenerate();
+  };
+
+  const handleSwapMeal = (dayIndex: number) => {
+    if (!generatedPlan || allMeals.length === 0) return;
+
+    // Get a random meal that's different from the current one
+    const currentMeal = generatedPlan.meals[dayIndex];
+    const availableMeals = allMeals.filter(m => m.id !== currentMeal?.id);
+
+    if (availableMeals.length === 0) return;
+
+    const randomMeal = availableMeals[Math.floor(Math.random() * availableMeals.length)];
+    replaceMealAtIndex(dayIndex, randomMeal);
+  };
+
+  const handleChooseMeal = (dayIndex: number) => {
+    setSelectingDayIndex(dayIndex);
+  };
+
+  const handleMealSelected = (meal: MealWithCategory) => {
+    if (selectingDayIndex !== null) {
+      replaceMealAtIndex(selectingDayIndex, meal);
+      setSelectingDayIndex(null);
+    }
+  };
+
+  const replaceMealAtIndex = (dayIndex: number, newMeal: MealWithCategory) => {
+    if (!generatedPlan) return;
+
+    const newMeals = [...generatedPlan.meals];
+    const oldMeal = newMeals[dayIndex];
+
+    // Handle leftovers logic
+    // If old meal had leftovers and took up 2 days, we need to handle the next day
+    const prevMeal = dayIndex > 0 ? newMeals[dayIndex - 1] : null;
+    const isLeftoverDay = prevMeal && oldMeal && prevMeal.id === oldMeal.id && oldMeal.hasLeftovers;
+
+    if (isLeftoverDay) {
+      // This is day 2 of a leftover meal, replace both days
+      newMeals[dayIndex - 1] = newMeal;
+      if (newMeal.hasLeftovers && dayIndex < 6) {
+        newMeals[dayIndex] = newMeal;
+      } else {
+        // New meal doesn't have leftovers, need to fill this day with something else
+        const differentMeal = allMeals.find(m => m.id !== newMeal.id) || newMeal;
+        newMeals[dayIndex] = differentMeal;
+      }
+    } else {
+      // Replace the meal at this index
+      newMeals[dayIndex] = newMeal;
+
+      // If old meal had leftovers, it occupied next day too
+      if (oldMeal?.hasLeftovers && dayIndex < 6 && newMeals[dayIndex + 1]?.id === oldMeal.id) {
+        // Check if new meal has leftovers
+        if (newMeal.hasLeftovers) {
+          newMeals[dayIndex + 1] = newMeal;
+        } else {
+          // New meal doesn't have leftovers, need to fill next day with something else
+          const differentMeal = allMeals.find(m => m.id !== newMeal.id) || newMeal;
+          newMeals[dayIndex + 1] = differentMeal;
+        }
+      } else if (newMeal.hasLeftovers && dayIndex < 6) {
+        // New meal has leftovers but old one didn't, replace next day too
+        newMeals[dayIndex + 1] = newMeal;
+      }
+    }
+
+    setGeneratedPlan({
+      ...generatedPlan,
+      meals: newMeals,
+    });
   };
 
   const getDifficultyBadge = (difficulty: string) => {
@@ -191,13 +279,31 @@ export default function WeeklyPlanner({ onPlanSaved }: WeeklyPlannerProps) {
                         )}
                       </div>
 
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500 mb-3">
                         Served {meal.timesServed}x
                         {meal.lastServedDate && (
                           <span className="block">
                             Last: {new Date(meal.lastServedDate).toLocaleDateString()}
                           </span>
                         )}
+                      </div>
+
+                      {/* Swap/Choose Buttons */}
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => handleSwapMeal(index)}
+                          disabled={isSaving}
+                          className="flex-1 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 disabled:opacity-50 transition-colors"
+                        >
+                          Swap
+                        </button>
+                        <button
+                          onClick={() => handleChooseMeal(index)}
+                          disabled={isSaving}
+                          className="flex-1 px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 disabled:opacity-50 transition-colors"
+                        >
+                          Choose
+                        </button>
                       </div>
                     </div>
                   )}
@@ -227,6 +333,16 @@ export default function WeeklyPlanner({ onPlanSaved }: WeeklyPlannerProps) {
           <p className="text-lg font-medium mb-2">No meal plan generated yet</p>
           <p className="text-sm">Select a week and click "Generate Week" to create an intelligent meal plan</p>
         </div>
+      )}
+
+      {/* Meal Selector Modal */}
+      {selectingDayIndex !== null && (
+        <MealSelectorModal
+          meals={allMeals}
+          dayName={DAYS_OF_WEEK[selectingDayIndex]}
+          onSelect={handleMealSelected}
+          onClose={() => setSelectingDayIndex(null)}
+        />
       )}
     </div>
   );
