@@ -57,8 +57,10 @@ export default function SavedPlans({ onEdit }: SavedPlansProps) {
   };
 
   const formatWeekRange = (weekStartDate: string) => {
-    const start = new Date(weekStartDate);
-    const end = new Date(weekStartDate);
+    // Parse in local time to avoid timezone issues
+    const [year, month, day] = weekStartDate.split('-').map(Number);
+    const start = new Date(year, month - 1, day);
+    const end = new Date(year, month - 1, day);
     end.setDate(end.getDate() + 6);
 
     return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;

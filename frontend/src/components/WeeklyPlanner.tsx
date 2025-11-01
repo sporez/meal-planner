@@ -171,7 +171,9 @@ export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlanne
   };
 
   const formatDate = (dateStr: string, dayOffset: number) => {
-    const date = new Date(dateStr);
+    // Parse in local time to avoid timezone issues
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
     date.setDate(date.getDate() + dayOffset);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
@@ -218,7 +220,10 @@ export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlanne
 
         {editingPlan && generatedPlan && (
           <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4">
-            Editing plan for week of {new Date(editingPlan.weekStartDate).toLocaleDateString()}. Make changes and save to update.
+            Editing plan for week of {(() => {
+              const [year, month, day] = editingPlan.weekStartDate.split('-').map(Number);
+              return new Date(year, month - 1, day).toLocaleDateString();
+            })()}. Make changes and save to update.
           </div>
         )}
       </div>
