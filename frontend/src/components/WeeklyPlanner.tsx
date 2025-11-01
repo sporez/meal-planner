@@ -139,6 +139,8 @@ export default function WeeklyPlanner({ onPlanSaved }: WeeklyPlannerProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-3">
             {DAYS_OF_WEEK.map((day, index) => {
               const meal = generatedPlan.meals[index];
+              const prevMeal = index > 0 ? generatedPlan.meals[index - 1] : null;
+              const isLeftoverDay = prevMeal && meal && prevMeal.id === meal.id && meal.hasLeftovers;
 
               return (
                 <div
@@ -154,6 +156,13 @@ export default function WeeklyPlanner({ onPlanSaved }: WeeklyPlannerProps) {
 
                   {meal && (
                     <div>
+                      {isLeftoverDay && (
+                        <div className="text-xs text-purple-600 mb-1 flex items-center">
+                          <span className="mr-1">←</span>
+                          <span>Leftovers</span>
+                        </div>
+                      )}
+
                       <div className="font-semibold text-sm mb-2">{meal.name}</div>
 
                       <div className="flex flex-wrap gap-1 mb-2">
@@ -174,6 +183,12 @@ export default function WeeklyPlanner({ onPlanSaved }: WeeklyPlannerProps) {
                         >
                           {meal.difficulty}
                         </span>
+
+                        {meal.hasLeftovers && !isLeftoverDay && (
+                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            Leftovers →
+                          </span>
+                        )}
                       </div>
 
                       <div className="text-xs text-gray-500">

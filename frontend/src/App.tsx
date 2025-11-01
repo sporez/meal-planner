@@ -3,7 +3,8 @@ import AddMealForm from './components/AddMealForm';
 import MealList from './components/MealList';
 import WeeklyPlanner from './components/WeeklyPlanner';
 import CategoryManager from './components/CategoryManager';
-import { Category, MealWithCategory, CreateMealRequest } from './types';
+import EditMealModal from './components/EditMealModal';
+import { Category, MealWithCategory, CreateMealRequest, UpdateMealRequest } from './types';
 import * as api from './services/api';
 
 type Tab = 'plan' | 'meals' | 'categories';
@@ -12,6 +13,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<Tab>('plan');
   const [categories, setCategories] = useState<Category[]>([]);
   const [meals, setMeals] = useState<MealWithCategory[]>([]);
+  const [editingMeal, setEditingMeal] = useState<MealWithCategory | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -40,6 +42,11 @@ function App() {
   const handleAddMeal = async (mealData: CreateMealRequest) => {
     const newMeal = await api.createMeal(mealData);
     setMeals([...meals, newMeal]);
+  };
+
+  const handleUpdateMeal = async (id: string, updates: UpdateMealRequest) => {
+    const updatedMeal = await api.updateMeal(id, updates);
+    setMeals(meals.map((m) => (m.id === id ? updatedMeal : m)));
   };
 
   const handleDeleteMeal = async (id: string) => {
@@ -129,7 +136,7 @@ function App() {
 
             {/* Meal List - Right Columns */}
             <div className="lg:col-span-2">
-              <MealList meals={meals} onDelete={handleDeleteMeal} />
+              <MealList meals={meals} onEdit={setEditingMeal} onDelete={handleDeleteMeal} />
             </div>
           </div>
         )}
@@ -139,6 +146,16 @@ function App() {
           <CategoryManager categories={categories} onUpdate={loadData} />
         )}
       </main>
+
+      {/* Edit Meal Modal */}
+      {editingMeal && (
+        <EditMealModal
+          meal={editingMeal}
+          categories={categories}
+          onSave={handleUpdateMeal}
+          onClose={() => setEditingMeal(null)}
+        />
+      )}
     </div>
   );
 }

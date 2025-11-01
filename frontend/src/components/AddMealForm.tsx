@@ -10,6 +10,7 @@ export default function AddMealForm({ categories, onSubmit }: AddMealFormProps) 
   const [name, setName] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
+  const [hasLeftovers, setHasLeftovers] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -25,11 +26,12 @@ export default function AddMealForm({ categories, onSubmit }: AddMealFormProps) 
     setIsSubmitting(true);
 
     try {
-      await onSubmit({ name: name.trim(), categoryId, difficulty });
+      await onSubmit({ name: name.trim(), categoryId, difficulty, hasLeftovers });
       // Reset form
       setName('');
       setCategoryId('');
       setDifficulty('medium');
+      setHasLeftovers(false);
     } catch (err: any) {
       setError(err.message || 'Failed to add meal');
     } finally {
@@ -103,6 +105,20 @@ export default function AddMealForm({ categories, onSubmit }: AddMealFormProps) 
               </label>
             ))}
           </div>
+        </div>
+
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="hasLeftovers"
+            checked={hasLeftovers}
+            onChange={(e) => setHasLeftovers(e.target.checked)}
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            disabled={isSubmitting}
+          />
+          <label htmlFor="hasLeftovers" className="ml-2 block text-sm text-gray-700">
+            Has leftovers (will be scheduled for 2 consecutive days)
+          </label>
         </div>
 
         <button

@@ -2,10 +2,11 @@ import { MealWithCategory } from '../types';
 
 interface MealListProps {
   meals: MealWithCategory[];
+  onEdit: (meal: MealWithCategory) => void;
   onDelete: (id: string) => Promise<void>;
 }
 
-export default function MealList({ meals, onDelete }: MealListProps) {
+export default function MealList({ meals, onEdit, onDelete }: MealListProps) {
   const handleDelete = async (id: string, name: string) => {
     if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
       try {
@@ -77,14 +78,27 @@ export default function MealList({ meals, onDelete }: MealListProps) {
               >
                 {meal.difficulty}
               </span>
+
+              {meal.hasLeftovers && (
+                <span className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                  Has Leftovers
+                </span>
+              )}
             </div>
 
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-600 mb-3">
               <p>Served {meal.timesServed} times</p>
               {meal.lastServedDate && (
                 <p>Last: {new Date(meal.lastServedDate).toLocaleDateString()}</p>
               )}
             </div>
+
+            <button
+              onClick={() => onEdit(meal)}
+              className="w-full px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+            >
+              Edit
+            </button>
           </div>
         ))}
       </div>
