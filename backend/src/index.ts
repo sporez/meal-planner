@@ -3,6 +3,7 @@ import cors from 'cors';
 import { initializeDatabase } from './db/database';
 import categoriesRouter from './routes/categories';
 import mealsRouter from './routes/meals';
+import mealPlansRouter from './routes/mealPlans';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -17,6 +18,7 @@ app.use(express.json());
 // Routes
 app.use('/api/categories', categoriesRouter);
 app.use('/api/meals', mealsRouter);
+app.use('/api/meal-plans', mealPlansRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {

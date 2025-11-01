@@ -5,6 +5,7 @@ import {
   CreateMealRequest,
   UpdateMealRequest,
   CreateCategoryRequest,
+  MealPlan,
 } from '../types';
 
 const API_BASE = '/api';
@@ -91,5 +92,58 @@ export async function deleteMeal(id: string): Promise<void> {
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.error || 'Failed to delete meal');
+  }
+}
+
+// Meal Plans
+export async function generateMealPlan(weekStartDate: string): Promise<MealPlan> {
+  const response = await fetch(`${API_BASE}/meal-plans/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ weekStartDate }),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to generate meal plan');
+  }
+  return response.json();
+}
+
+export async function saveMealPlan(weekStartDate: string, mealIds: string[]): Promise<MealPlan> {
+  const response = await fetch(`${API_BASE}/meal-plans`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ weekStartDate, mealIds }),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to save meal plan');
+  }
+  return response.json();
+}
+
+export async function getMealPlans(): Promise<MealPlan[]> {
+  const response = await fetch(`${API_BASE}/meal-plans`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch meal plans');
+  }
+  return response.json();
+}
+
+export async function getMealPlan(id: string): Promise<MealPlan> {
+  const response = await fetch(`${API_BASE}/meal-plans/${id}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch meal plan');
+  }
+  return response.json();
+}
+
+export async function deleteMealPlan(id: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/meal-plans/${id}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to delete meal plan');
   }
 }
