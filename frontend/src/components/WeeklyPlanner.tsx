@@ -7,9 +7,10 @@ const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'F
 
 interface WeeklyPlannerProps {
   onPlanSaved?: () => void;
+  editingPlan?: MealPlan | null;
 }
 
-export default function WeeklyPlanner({ onPlanSaved }: WeeklyPlannerProps) {
+export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlannerProps) {
   const [weekStartDate, setWeekStartDate] = useState<string>(getNextSunday());
   const [generatedPlan, setGeneratedPlan] = useState<MealPlan | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -23,6 +24,16 @@ export default function WeeklyPlanner({ onPlanSaved }: WeeklyPlannerProps) {
   useEffect(() => {
     loadMeals();
   }, []);
+
+  // Load editing plan when provided
+  useEffect(() => {
+    if (editingPlan) {
+      setWeekStartDate(editingPlan.weekStartDate);
+      setGeneratedPlan(editingPlan);
+      setSuccess('');
+      setError('');
+    }
+  }, [editingPlan]);
 
   const loadMeals = async () => {
     try {
@@ -56,9 +67,15 @@ export default function WeeklyPlanner({ onPlanSaved }: WeeklyPlannerProps) {
     setIsSaving(true);
 
     try {
+      // If editing an existing plan, delete it first
+      if (editingPlan && editingPlan.id !== 'preview') {
+        await api.deleteMealPlan(editingPlan.id);
+      }
+
+      // Create the new/updated plan
       const mealIds = generatedPlan.meals.map(m => m.id);
       await api.saveMealPlan(weekStartDate, mealIds);
-      setSuccess('Meal plan saved successfully!');
+      setSuccess(editingPlan ? 'Meal plan updated successfully!' : 'Meal plan saved successfully!');
       setGeneratedPlan(null);
       onPlanSaved?.();
     } catch (err: any) {
@@ -196,6 +213,12 @@ export default function WeeklyPlanner({ onPlanSaved }: WeeklyPlannerProps) {
         {success && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
             {success}
+          </div>
+        )}
+
+        {editingPlan && generatedPlan && (
+          <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4">
+            Editing plan for week of {new Date(editingPlan.weekStartDate).toLocaleDateString()}. Make changes and save to update.
           </div>
         )}
       </div>

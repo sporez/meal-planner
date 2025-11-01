@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react';
 import { MealWithCategory } from '../types';
 
 interface MealListProps {
@@ -7,6 +8,10 @@ interface MealListProps {
 }
 
 export default function MealList({ meals, onEdit, onDelete }: MealListProps) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('');
+
   const handleDelete = async (id: string, name: string) => {
     if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
       try {
@@ -30,6 +35,24 @@ export default function MealList({ meals, onEdit, onDelete }: MealListProps) {
     }
   };
 
+  // Get unique categories and difficulties for filters
+  const categories = useMemo(() =>
+    Array.from(new Set(meals.map(m => m.categoryName))).sort(),
+    [meals]
+  );
+
+  const difficulties = ['easy', 'medium', 'hard'];
+
+  // Filter meals based on search and filters
+  const filteredMeals = useMemo(() => {
+    return meals.filter(meal => {
+      const matchesSearch = meal.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = !selectedCategory || meal.categoryName === selectedCategory;
+      const matchesDifficulty = !selectedDifficulty || meal.difficulty === selectedDifficulty;
+      return matchesSearch && matchesCategory && matchesDifficulty;
+    });
+  }, [meals, searchTerm, selectedCategory, selectedDifficulty]);
+
   if (meals.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow p-6">
@@ -43,8 +66,51 @@ export default function MealList({ meals, onEdit, onDelete }: MealListProps) {
     <div className="bg-white rounded-lg shadow p-6">
       <h2 className="text-2xl font-bold mb-4">Your Meals ({meals.length})</h2>
 
+      {/* Search and Filters */}
+      <div className="mb-4 space-y-3">
+        <input
+          type="text"
+          placeholder="Search meals..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <div className="flex flex-col sm:flex-row gap-3">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">All Categories</option>
+            {categories.map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+          <select
+            value={selectedDifficulty}
+            onChange={(e) => setSelectedDifficulty(e.target.value)}
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">All Difficulties</option>
+            {difficulties.map(diff => (
+              <option key={diff} value={diff}>{diff.charAt(0).toUpperCase() + diff.slice(1)}</option>
+            ))}
+          </select>
+        </div>
+        {filteredMeals.length < meals.length && (
+          <p className="text-sm text-gray-600">
+            Showing {filteredMeals.length} of {meals.length} meals
+          </p>
+        )}
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {meals.map((meal) => (
+        {filteredMeals.length === 0 ? (
+          <div className="col-span-full text-center py-8 text-gray-500">
+            No meals match your filters
+          </div>
+        ) : (
+          filteredMeals.map((meal) => (
           <div
             key={meal.id}
             className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
@@ -100,7 +166,8 @@ export default function MealList({ meals, onEdit, onDelete }: MealListProps) {
               Edit
             </button>
           </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

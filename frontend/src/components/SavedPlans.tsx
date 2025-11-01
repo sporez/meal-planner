@@ -4,7 +4,11 @@ import * as api from '../services/api';
 
 const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-export default function SavedPlans() {
+interface SavedPlansProps {
+  onEdit?: (plan: MealPlan) => void;
+}
+
+export default function SavedPlans({ onEdit }: SavedPlansProps) {
   const [plans, setPlans] = useState<MealPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -134,6 +138,17 @@ export default function SavedPlans() {
                   </div>
 
                   <div className="flex items-center gap-2">
+                    {onEdit && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEdit(plan);
+                        }}
+                        className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                      >
+                        Edit
+                      </button>
+                    )}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();

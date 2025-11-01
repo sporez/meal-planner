@@ -5,7 +5,7 @@ import WeeklyPlanner from './components/WeeklyPlanner';
 import CategoryManager from './components/CategoryManager';
 import EditMealModal from './components/EditMealModal';
 import SavedPlans from './components/SavedPlans';
-import { Category, MealWithCategory, CreateMealRequest, UpdateMealRequest } from './types';
+import { Category, MealWithCategory, CreateMealRequest, UpdateMealRequest, MealPlan } from './types';
 import * as api from './services/api';
 
 type Tab = 'plan' | 'meals' | 'categories' | 'saved';
@@ -15,6 +15,7 @@ function App() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [meals, setMeals] = useState<MealWithCategory[]>([]);
   const [editingMeal, setEditingMeal] = useState<MealWithCategory | null>(null);
+  const [editingPlan, setEditingPlan] = useState<MealPlan | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -53,6 +54,16 @@ function App() {
   const handleDeleteMeal = async (id: string) => {
     await api.deleteMeal(id);
     setMeals(meals.filter((m) => m.id !== id));
+  };
+
+  const handleEditPlan = (plan: MealPlan) => {
+    setEditingPlan(plan);
+    setActiveTab('plan');
+  };
+
+  const handlePlanSaved = () => {
+    setEditingPlan(null);
+    loadData();
   };
 
   if (loading) {
@@ -136,7 +147,7 @@ function App() {
 
         {/* Plan Week Tab */}
         {activeTab === 'plan' && (
-          <WeeklyPlanner onPlanSaved={loadData} />
+          <WeeklyPlanner onPlanSaved={handlePlanSaved} editingPlan={editingPlan} />
         )}
 
         {/* Manage Meals Tab */}
@@ -161,7 +172,7 @@ function App() {
 
         {/* Saved Plans Tab */}
         {activeTab === 'saved' && (
-          <SavedPlans />
+          <SavedPlans onEdit={handleEditPlan} />
         )}
       </main>
 
