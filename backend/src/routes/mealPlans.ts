@@ -19,8 +19,9 @@ router.post('/generate', (req, res) => {
       return res.status(400).json({ error: 'weekStartDate is required (YYYY-MM-DD format)' });
     }
 
-    // Validate it's a Monday
-    const date = new Date(weekStartDate);
+    // Validate it's a Monday (parse in local time to avoid timezone issues)
+    const [year, month, day] = weekStartDate.split('-').map(Number);
+    const date = new Date(year, month - 1, day); // month is 0-indexed
     if (date.getDay() !== 1) {
       return res.status(400).json({ error: 'weekStartDate must be a Monday' });
     }
