@@ -1,15 +1,17 @@
 import { useState, useMemo } from 'react';
 import { MealWithCategory } from '../types';
 import * as api from '../services/api';
+import StarRating from './StarRating';
 
 interface MealListProps {
   meals: MealWithCategory[];
   onEdit: (meal: MealWithCategory) => void;
   onDelete: (id: string) => Promise<void>;
   onStatsReset?: () => void;
+  onUpdate?: () => void;
 }
 
-export default function MealList({ meals, onEdit, onDelete, onStatsReset }: MealListProps) {
+export default function MealList({ meals, onEdit, onDelete, onStatsReset, onUpdate }: MealListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
@@ -42,16 +44,25 @@ export default function MealList({ meals, onEdit, onDelete, onStatsReset }: Meal
     }
   };
 
+  const handleRatingChange = async (mealId: string, rating: number | null) => {
+    try {
+      await api.updateMeal(mealId, { rating });
+      onUpdate?.();
+    } catch (err: any) {
+      alert(err.message || 'Failed to update meal rating');
+    }
+  };
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200';
       case 'hard':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200';
     }
   };
 
@@ -149,11 +160,19 @@ export default function MealList({ meals, onEdit, onDelete, onStatsReset }: Meal
               <h3 className="font-semibold text-lg dark:text-white">{meal.name}</h3>
               <button
                 onClick={() => handleDelete(meal.id, meal.name)}
-                className="text-red-500 hover:text-red-700 text-xl"
+                className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-xl"
                 title="Delete meal"
               >
                 ×
               </button>
+            </div>
+
+            <div className="mb-3">
+              <StarRating
+                rating={meal.rating}
+                onChange={(rating) => handleRatingChange(meal.id, rating)}
+                size="sm"
+              />
             </div>
 
             <div className="flex flex-wrap gap-2 mb-2">
@@ -176,7 +195,7 @@ export default function MealList({ meals, onEdit, onDelete, onStatsReset }: Meal
               </span>
 
               {meal.hasLeftovers && (
-                <span className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                <span className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200">
                   Has Leftovers
                 </span>
               )}

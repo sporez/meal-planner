@@ -47,6 +47,19 @@ export function initializeDatabase() {
     // Table might not exist yet, which is fine
   }
 
+  // Migration: Add rating column to existing meals table
+  try {
+    const columns = db.pragma('table_info(meals)');
+    const ratingExists = columns.some((col: any) => col.name === 'rating');
+
+    if (!ratingExists) {
+      db.exec('ALTER TABLE meals ADD COLUMN rating INTEGER CHECK(rating IS NULL OR (rating >= 1 AND rating <= 5))');
+      console.log('Migration: Added rating column to meals table');
+    }
+  } catch (error) {
+    // Table might not exist yet, which is fine
+  }
+
   // Create meal plans table
   db.exec(`
     CREATE TABLE IF NOT EXISTS meal_plans (

@@ -120,11 +120,14 @@ export async function resetMealStats(): Promise<{ message: string; mealsUpdated:
 }
 
 // Meal Plans
-export async function generateMealPlan(weekStartDate: string): Promise<MealPlan> {
+export async function generateMealPlan(
+  weekStartDate: string,
+  options?: { avoidSameMealDays?: number; maxCategoryPerWeek?: number }
+): Promise<MealPlan> {
   const response = await fetch(`${API_BASE}/meal-plans/generate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ weekStartDate }),
+    body: JSON.stringify({ weekStartDate, ...options }),
   });
   if (!response.ok) {
     const error = await response.json();

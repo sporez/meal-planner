@@ -1,5 +1,6 @@
 import { useState, FormEvent, useEffect } from 'react';
 import { Category, Difficulty, MealWithCategory, UpdateMealRequest } from '../types';
+import StarRating from './StarRating';
 
 interface EditMealModalProps {
   meal: MealWithCategory;
@@ -13,6 +14,7 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
   const [categoryId, setCategoryId] = useState(meal.categoryId);
   const [difficulty, setDifficulty] = useState<Difficulty>(meal.difficulty);
   const [hasLeftovers, setHasLeftovers] = useState(meal.hasLeftovers);
+  const [rating, setRating] = useState<number | null>(meal.rating);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -33,6 +35,7 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
         categoryId,
         difficulty,
         hasLeftovers,
+        rating,
       });
       onClose();
     } catch (err: any) {
@@ -55,11 +58,11 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
-          <h2 className="text-2xl font-bold mb-4">Edit Meal</h2>
+          <h2 className="text-2xl font-bold mb-4 dark:text-white">Edit Meal</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+              <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-3 rounded">
                 {error}
               </div>
             )}
@@ -132,6 +135,17 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
               <label htmlFor="edit-hasLeftovers" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                 Has leftovers (will be scheduled for 2 consecutive days)
               </label>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Rating
+              </label>
+              <StarRating
+                rating={rating}
+                onChange={setRating}
+                size="md"
+              />
             </div>
 
             <div className="flex gap-2 pt-4">

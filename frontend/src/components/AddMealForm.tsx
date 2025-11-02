@@ -45,7 +45,7 @@ export default function AddMealForm({ categories, onSubmit }: AddMealFormProps) 
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-3 rounded">
             {error}
           </div>
         )}

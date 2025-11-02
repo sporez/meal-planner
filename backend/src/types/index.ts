@@ -13,6 +13,7 @@ export interface Meal {
   categoryId: string;
   difficulty: Difficulty;
   hasLeftovers: boolean;
+  rating: number | null; // 1-5 stars, null if not rated
   lastServedDate: string | null;
   timesServed: number;
   createdAt: string;
@@ -35,6 +36,7 @@ export interface UpdateMealRequest {
   categoryId?: string;
   difficulty?: Difficulty;
   hasLeftovers?: boolean;
+  rating?: number | null; // 1-5 stars, null to clear rating
 }
 
 export interface MealPlan {

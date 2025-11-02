@@ -19,6 +19,8 @@ interface GenerateOptions {
  * 1. Recency - when was it last served
  * 2. Frequency - how often has it been served overall
  * 3. Category diversity - avoid repeating categories
+ * 4. Difficulty balance - distribute difficulty evenly across week
+ * 5. Rating - higher-rated meals preferred (1-5 stars)
  */
 export class MealGenerator {
   private avoidSameMealDays: number;
@@ -121,6 +123,7 @@ export class MealGenerator {
         m.category_id,
         m.difficulty,
         m.has_leftovers,
+        m.rating,
         m.last_served_date,
         m.times_served,
         m.created_at,
@@ -139,6 +142,7 @@ export class MealGenerator {
       categoryId: row.category_id,
       difficulty: row.difficulty,
       hasLeftovers: Boolean(row.has_leftovers),
+      rating: row.rating,
       lastServedDate: row.last_served_date,
       timesServed: row.times_served,
       createdAt: row.created_at,
@@ -165,8 +169,8 @@ export class MealGenerator {
         return false;
       }
 
-      // If this is a leftover meal and we're on day 6 (Sunday), skip it
-      // because it needs 2 consecutive days
+      // If this is a leftover meal and we're on day 6 (Saturday), skip it
+      // because it needs 2 consecutive days and would spill into next week
       if (meal.hasLeftovers && dayIndex === 6) {
         return false;
       }
@@ -239,34 +243,49 @@ export class MealGenerator {
       reasons.push(`Fresh category this week (+${diversityScore.toFixed(0)})`);
     }
 
-    // Factor 4: Difficulty distribution (mix easy and hard meals)
-    const difficultyScore = this.getDifficultyScore(meal.difficulty, selectedMeals, dayIndex);
+    // Factor 4: Difficulty distribution (balance difficulty across the week)
+    const difficultyScore = this.getDifficultyScore(meal.difficulty, selectedMeals);
     score += difficultyScore;
     reasons.push(`Difficulty balance (+${difficultyScore.toFixed(0)})`);
+
+    // Factor 5: Rating multiplier (ratings provide significant weight)
+    if (meal.rating !== null) {
+      const ratingMultiplier = meal.rating; // 1-5x multiplier
+      score *= ratingMultiplier;
+      reasons.push(`Rating ${meal.rating}/5 (×${ratingMultiplier})`);
+    } else {
+      // Unrated meals get neutral 3x multiplier
+      score *= 3;
+      reasons.push(`Unrated (×3)`);
+    }
 
     return { meal, score, reasons };
   }
 
   /**
    * Get score bonus for difficulty distribution
+   * Balances difficulty across the week to avoid too many hard meals
    */
   private getDifficultyScore(
     difficulty: string,
-    selectedMeals: MealWithCategory[],
-    dayIndex: number
+    selectedMeals: MealWithCategory[]
   ): number {
-    // Prefer easier meals on weekdays (indices 0-4), harder on weekends (5-6)
-    const isWeekend = dayIndex >= 5;
+    // Count existing difficulty levels in selected meals
+    const counts = {
+      easy: selectedMeals.filter(m => m.difficulty === 'easy').length,
+      medium: selectedMeals.filter(m => m.difficulty === 'medium').length,
+      hard: selectedMeals.filter(m => m.difficulty === 'hard').length,
+    };
 
-    if (isWeekend && difficulty === 'hard') {
-      return 15;
-    } else if (!isWeekend && difficulty === 'easy') {
-      return 15;
-    } else if (difficulty === 'medium') {
-      return 10; // Medium is always good
-    }
+    // Prefer difficulty levels that are underrepresented
+    // Target: ~2 easy, ~3 medium, ~2 hard per week
+    const targets = { easy: 2, medium: 3, hard: 2 };
+    const currentCount = counts[difficulty as keyof typeof counts] || 0;
+    const target = targets[difficulty as keyof typeof targets] || 2;
 
-    return 5;
+    // Higher score if we're below target, lower if above
+    const diffFromTarget = target - currentCount;
+    return 10 + (diffFromTarget * 5);
   }
 
   /**

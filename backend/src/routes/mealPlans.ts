@@ -13,7 +13,7 @@ const router = Router();
  */
 router.post('/generate', (req, res) => {
   try {
-    const { weekStartDate } = req.body;
+    const { weekStartDate, avoidSameMealDays, maxCategoryPerWeek } = req.body;
 
     if (!weekStartDate) {
       return res.status(400).json({ error: 'weekStartDate is required (YYYY-MM-DD format)' });
@@ -26,7 +26,11 @@ router.post('/generate', (req, res) => {
       return res.status(400).json({ error: 'weekStartDate must be a Sunday' });
     }
 
-    const generator = new MealGenerator();
+    // Pass optional settings to generator
+    const generator = new MealGenerator({
+      avoidSameMealDays,
+      maxCategoryPerWeek,
+    });
     const meals = generator.generateWeek(weekStartDate);
 
     // Return the generated plan (not saved yet)
@@ -213,6 +217,7 @@ function getMealPlanMeals(planId: string): MealWithCategory[] {
       m.category_id,
       m.difficulty,
       m.has_leftovers,
+      m.rating,
       m.last_served_date,
       m.times_served,
       m.created_at,
@@ -234,6 +239,7 @@ function getMealPlanMeals(planId: string): MealWithCategory[] {
     categoryId: row.category_id,
     difficulty: row.difficulty,
     hasLeftovers: Boolean(row.has_leftovers),
+    rating: row.rating,
     lastServedDate: row.last_served_date,
     timesServed: row.times_served,
     createdAt: row.created_at,

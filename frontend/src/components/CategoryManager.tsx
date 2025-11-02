@@ -107,12 +107,12 @@ export default function CategoryManager({ categories, onUpdate }: CategoryManage
       {/* Add/Edit Form */}
       {(isAdding || editingId) && (
         <form onSubmit={handleSubmit} className="mb-6 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700">
-          <h3 className="font-semibold mb-4">
+          <h3 className="font-semibold mb-4 dark:text-white">
             {editingId ? 'Edit Category' : 'Add New Category'}
           </h3>
 
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
+            <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-2 rounded mb-4">
               {error}
             </div>
           )}
@@ -162,7 +162,7 @@ export default function CategoryManager({ categories, onUpdate }: CategoryManage
                   className="h-10 w-20 rounded border border-gray-300 cursor-pointer"
                   disabled={isSubmitting}
                 />
-                <span className="text-sm text-gray-600">or pick a custom color</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">or pick a custom color</span>
               </div>
             </div>
 
@@ -197,7 +197,7 @@ export default function CategoryManager({ categories, onUpdate }: CategoryManage
           categories.map((category) => (
             <div
               key={category.id}
-              className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-750 transition-colors"
+              className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               <div className="flex items-center gap-3">
                 <div

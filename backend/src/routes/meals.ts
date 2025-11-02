@@ -15,6 +15,7 @@ router.get('/', (req, res) => {
         m.category_id,
         m.difficulty,
         m.has_leftovers,
+        m.rating,
         m.last_served_date,
         m.times_served,
         m.created_at,
@@ -33,6 +34,7 @@ router.get('/', (req, res) => {
       categoryId: row.category_id,
       difficulty: row.difficulty,
       hasLeftovers: Boolean(row.has_leftovers),
+      rating: row.rating,
       lastServedDate: row.last_served_date,
       timesServed: row.times_served,
       createdAt: row.created_at,
@@ -59,6 +61,7 @@ router.get('/:id', (req, res) => {
         m.category_id,
         m.difficulty,
         m.has_leftovers,
+        m.rating,
         m.last_served_date,
         m.times_served,
         m.created_at,
@@ -81,6 +84,7 @@ router.get('/:id', (req, res) => {
       categoryId: row.category_id,
       difficulty: row.difficulty,
       hasLeftovers: Boolean(row.has_leftovers),
+      rating: row.rating,
       lastServedDate: row.last_served_date,
       timesServed: row.times_served,
       createdAt: row.created_at,
@@ -139,6 +143,7 @@ router.post('/', (req, res) => {
         m.category_id,
         m.difficulty,
         m.has_leftovers,
+        m.rating,
         m.last_served_date,
         m.times_served,
         m.created_at,
@@ -157,6 +162,7 @@ router.post('/', (req, res) => {
       categoryId: row.category_id,
       difficulty: row.difficulty,
       hasLeftovers: Boolean(row.has_leftovers),
+      rating: row.rating,
       lastServedDate: row.last_served_date,
       timesServed: row.times_served,
       createdAt: row.created_at,
@@ -222,6 +228,16 @@ router.put('/:id', (req, res) => {
       values.push(updates.hasLeftovers ? 1 : 0);
     }
 
+    if (updates.rating !== undefined) {
+      if (updates.rating !== null && (updates.rating < 1 || updates.rating > 5)) {
+        return res.status(400).json({
+          error: 'Rating must be between 1 and 5, or null'
+        });
+      }
+      updateFields.push('rating = ?');
+      values.push(updates.rating);
+    }
+
     if (updateFields.length === 0) {
       return res.status(400).json({ error: 'No valid fields to update' });
     }
@@ -244,6 +260,7 @@ router.put('/:id', (req, res) => {
         m.category_id,
         m.difficulty,
         m.has_leftovers,
+        m.rating,
         m.last_served_date,
         m.times_served,
         m.created_at,
@@ -262,6 +279,7 @@ router.put('/:id', (req, res) => {
       categoryId: row.category_id,
       difficulty: row.difficulty,
       hasLeftovers: Boolean(row.has_leftovers),
+      rating: row.rating,
       lastServedDate: row.last_served_date,
       timesServed: row.times_served,
       createdAt: row.created_at,

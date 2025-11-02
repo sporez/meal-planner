@@ -10,3 +10,56 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Print Styles */
+@media print {
+  /* Hide everything by default */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Only show the printable meal plan */
+  .printable-meal-plan,
+  .printable-meal-plan * {
+    visibility: visible;
+  }
+
+  .printable-meal-plan {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 20px;
+  }
+
+  /* Hide interactive elements in print */
+  button,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Ensure proper page breaks */
+  .meal-day {
+    page-break-inside: avoid;
+  }
+
+  /* Print-friendly colors */
+  @page {
+    margin: 1cm;
+  }
+
+  /* Force light mode colors for printing */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: black !important;
+  }
+
+  .meal-day {
+    border: 1px solid #ccc !important;
+    background: white !important;
+  }
+}
