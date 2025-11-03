@@ -9,7 +9,7 @@ const router = Router();
 /**
  * Generate a new meal plan for a specific week
  * POST /api/meal-plans/generate
- * Body: { weekStartDate: "2024-01-01" } (Sunday's date)
+ * Body: { weekStartDate: "2024-01-01" } (any date - will calculate Sunday of that week)
  */
 router.post('/generate', (req, res) => {
   try {
@@ -19,24 +19,33 @@ router.post('/generate', (req, res) => {
       return res.status(400).json({ error: 'weekStartDate is required (YYYY-MM-DD format)' });
     }
 
-    // Validate it's a Sunday (parse in local time to avoid timezone issues)
+    // Calculate the Sunday of the week for the given date (parse in local time to avoid timezone issues)
     const [year, month, day] = weekStartDate.split('-').map(Number);
     const date = new Date(year, month - 1, day); // month is 0-indexed
-    if (date.getDay() !== 0) {
-      return res.status(400).json({ error: 'weekStartDate must be a Sunday' });
+    const dayOfWeek = date.getDay();
+
+    // If not Sunday, calculate the previous Sunday
+    if (dayOfWeek !== 0) {
+      date.setDate(date.getDate() - dayOfWeek);
     }
+
+    // Convert back to YYYY-MM-DD format (using local time to avoid timezone shifts)
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    const calculatedSunday = `${y}-${m}-${d}`;
 
     // Pass optional settings to generator
     const generator = new MealGenerator({
       avoidSameMealDays,
       maxCategoryPerWeek,
     });
-    const meals = generator.generateWeek(weekStartDate);
+    const meals = generator.generateWeek(calculatedSunday);
 
     // Return the generated plan (not saved yet)
     const plan: MealPlan = {
       id: 'preview',
-      weekStartDate,
+      weekStartDate: calculatedSunday,
       meals,
       createdAt: new Date().toISOString(),
     };
@@ -99,9 +108,14 @@ router.post('/', (req, res) => {
         insertEntry.run(entryId, planId, index, mealId);
 
         // Update meal's last served date and count
-        const dayDate = new Date(weekStartDate);
+        // Parse weekStartDate in local time to avoid timezone issues
+        const [y, m, d] = weekStartDate.split('-').map(Number);
+        const dayDate = new Date(y, m - 1, d);
         dayDate.setDate(dayDate.getDate() + index);
-        updateMeal.run(dayDate.toISOString(), mealId);
+
+        // Format as YYYY-MM-DD in local time
+        const dateStr = `${dayDate.getFullYear()}-${String(dayDate.getMonth() + 1).padStart(2, '0')}-${String(dayDate.getDate()).padStart(2, '0')}`;
+        updateMeal.run(dateStr, mealId);
       });
     });
 

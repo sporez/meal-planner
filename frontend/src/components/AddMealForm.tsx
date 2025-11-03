@@ -1,5 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { Category, Difficulty, CreateMealRequest } from '../types';
+import StarRating from './StarRating';
 
 interface AddMealFormProps {
   categories: Category[];
@@ -11,6 +12,7 @@ export default function AddMealForm({ categories, onSubmit }: AddMealFormProps) 
   const [categoryId, setCategoryId] = useState('');
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const [hasLeftovers, setHasLeftovers] = useState(false);
+  const [rating, setRating] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -26,12 +28,13 @@ export default function AddMealForm({ categories, onSubmit }: AddMealFormProps) 
     setIsSubmitting(true);
 
     try {
-      await onSubmit({ name: name.trim(), categoryId, difficulty, hasLeftovers });
+      await onSubmit({ name: name.trim(), categoryId, difficulty, hasLeftovers, rating });
       // Reset form
       setName('');
       setCategoryId('');
       setDifficulty('medium');
       setHasLeftovers(false);
+      setRating(null);
     } catch (err: any) {
       setError(err.message || 'Failed to add meal');
     } finally {
@@ -105,6 +108,17 @@ export default function AddMealForm({ categories, onSubmit }: AddMealFormProps) 
               </label>
             ))}
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Rating (optional)
+          </label>
+          <StarRating
+            rating={rating}
+            onChange={setRating}
+            size="md"
+          />
         </div>
 
         <div className="flex items-center">

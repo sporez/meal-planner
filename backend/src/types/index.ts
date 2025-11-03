@@ -29,6 +29,7 @@ export interface CreateMealRequest {
   categoryId: string;
   difficulty: Difficulty;
   hasLeftovers?: boolean;
+  rating?: number | null; // 1-5 stars, null if not rated
 }
 
 export interface UpdateMealRequest {

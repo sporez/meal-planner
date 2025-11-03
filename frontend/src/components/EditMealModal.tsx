@@ -123,6 +123,17 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
               </div>
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Rating
+              </label>
+              <StarRating
+                rating={rating}
+                onChange={setRating}
+                size="md"
+              />
+            </div>
+
             <div className="flex items-center dark:text-gray-300">
               <input
                 type="checkbox"
@@ -135,17 +146,6 @@ export default function EditMealModal({ meal, categories, onSave, onClose }: Edi
               <label htmlFor="edit-hasLeftovers" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                 Has leftovers (will be scheduled for 2 consecutive days)
               </label>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Rating
-              </label>
-              <StarRating
-                rating={rating}
-                onChange={setRating}
-                size="md"
-              />
             </div>
 
             <div className="flex gap-2 pt-4">

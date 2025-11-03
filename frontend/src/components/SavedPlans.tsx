@@ -47,6 +47,24 @@ export default function SavedPlans({ onEdit }: SavedPlansProps) {
     }
   };
 
+  const handlePrint = (planId: string) => {
+    const wasExpanded = expandedPlanId === planId;
+
+    if (!wasExpanded) {
+      // Expand the plan first
+      setExpandedPlanId(planId);
+      // Wait for the DOM to update before printing
+      setTimeout(() => {
+        window.print();
+        // Collapse it back after printing if it was originally collapsed
+        setExpandedPlanId(null);
+      }, 100);
+    } else {
+      // Already expanded, just print
+      window.print();
+    }
+  };
+
   const getDifficultyBadge = (difficulty: string) => {
     const colors = {
       easy: 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200',
@@ -154,7 +172,7 @@ export default function SavedPlans({ onEdit }: SavedPlansProps) {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        window.print();
+                        handlePrint(plan.id);
                       }}
                       className="px-3 py-1 text-sm bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded hover:bg-green-200 dark:hover:bg-green-800 transition-colors"
                       title="Print this meal plan"
@@ -191,6 +209,10 @@ export default function SavedPlans({ onEdit }: SavedPlansProps) {
                 {/* Expanded Plan Details */}
                 {isExpanded && (
                   <div className="printable-meal-plan p-4 bg-white dark:bg-gray-800">
+                    <div className="print-title hidden">
+                      <h1>Weekly Meal Plan</h1>
+                      <h2>Week of {formatWeekRange(plan.weekStartDate)}</h2>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-3">
                       {DAYS_OF_WEEK.map((day, index) => {
                         const meal = plan.meals[index];

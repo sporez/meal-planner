@@ -102,7 +102,7 @@ router.get('/:id', (req, res) => {
 // Create a new meal
 router.post('/', (req, res) => {
   try {
-    const { name, categoryId, difficulty, hasLeftovers } = req.body as CreateMealRequest;
+    const { name, categoryId, difficulty, hasLeftovers, rating } = req.body as CreateMealRequest;
 
     if (!name || !categoryId || !difficulty) {
       return res.status(400).json({
@@ -113,6 +113,13 @@ router.post('/', (req, res) => {
     if (!['easy', 'medium', 'hard'].includes(difficulty)) {
       return res.status(400).json({
         error: 'Difficulty must be easy, medium, or hard'
+      });
+    }
+
+    // Validate rating if provided
+    if (rating !== undefined && rating !== null && (rating < 1 || rating > 5)) {
+      return res.status(400).json({
+        error: 'Rating must be between 1 and 5, or null'
       });
     }
 
@@ -129,11 +136,11 @@ router.post('/', (req, res) => {
     const hasLeftoversValue = hasLeftovers ? 1 : 0;
 
     const stmt = db.prepare(`
-      INSERT INTO meals (id, name, category_id, difficulty, has_leftovers, times_served, created_at)
-      VALUES (?, ?, ?, ?, ?, 0, ?)
+      INSERT INTO meals (id, name, category_id, difficulty, has_leftovers, rating, times_served, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, 0, ?)
     `);
 
-    stmt.run(id, name, categoryId, difficulty, hasLeftoversValue, createdAt);
+    stmt.run(id, name, categoryId, difficulty, hasLeftoversValue, rating ?? null, createdAt);
 
     // Fetch the created meal with category info
     const getMealStmt = db.prepare(`

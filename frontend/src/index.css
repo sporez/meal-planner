@@ -32,20 +32,52 @@ body {
     padding: 20px;
   }
 
+  /* Show and style the print title */
+  .print-title {
+    display: block !important;
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #333;
+  }
+
+  .print-title h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+    color: black !important;
+  }
+
+  .print-title h2 {
+    font-size: 16px;
+    font-weight: normal;
+    margin: 0;
+    color: #555 !important;
+  }
+
   /* Hide interactive elements in print */
   button,
   .no-print {
     display: none !important;
   }
 
+  /* Use 2-column layout for better print appearance */
+  .printable-meal-plan > div:not(.print-title) {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+
   /* Ensure proper page breaks */
   .meal-day {
     page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   /* Print-friendly colors */
   @page {
-    margin: 1cm;
+    margin: 1.5cm;
+    size: letter;
   }
 
   /* Force light mode colors for printing */
@@ -59,7 +91,37 @@ body {
   }
 
   .meal-day {
-    border: 1px solid #ccc !important;
+    border: 2px solid #333 !important;
     background: white !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  /* Improve meal card styling for print */
+  .meal-day > div:first-child {
+    font-size: 14px !important;
+    font-weight: bold !important;
+    color: #000 !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* Make meal names more prominent */
+  .meal-day .font-semibold {
+    font-size: 16px !important;
+    color: #000 !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Ensure badges are visible and readable */
+  .meal-day span[class*="px-2"] {
+    border: 1px solid #999 !important;
+    padding: 2px 8px !important;
+    font-size: 11px !important;
+  }
+
+  /* Make leftover indicators clear */
+  .meal-day div[class*="purple"] {
+    color: #6b21a8 !important;
+    font-weight: 600 !important;
   }
 }

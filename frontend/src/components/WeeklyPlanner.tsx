@@ -56,6 +56,8 @@ export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlanne
 
       const plan = await api.generateMealPlan(weekStartDate, settings);
       setGeneratedPlan(plan);
+      // Update weekStartDate to match the calculated Sunday from the server
+      setWeekStartDate(plan.weekStartDate);
     } catch (err: any) {
       setError(err.message || 'Failed to generate meal plan');
     } finally {
@@ -182,31 +184,64 @@ export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlanne
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
+  const formatWeekRange = (weekStartDate: string) => {
+    // Parse in local time to avoid timezone issues
+    const [year, month, day] = weekStartDate.split('-').map(Number);
+    const start = new Date(year, month - 1, day);
+    const end = new Date(year, month - 1, day);
+    end.setDate(end.getDate() + 6);
+
+    return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+  };
+
+  const getSundayOfWeek = (dateStr: string): string => {
+    // Parse in local time to avoid timezone issues
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+    const dayOfWeek = date.getDay();
+
+    // If not Sunday, calculate the previous Sunday
+    if (dayOfWeek !== 0) {
+      date.setDate(date.getDate() - dayOfWeek);
+    }
+
+    // Convert back to YYYY-MM-DD format
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
       <div className="mb-6">
         <h2 className="text-2xl font-bold dark:text-white mb-4">Weekly Meal Planner</h2>
 
         {/* Week Selector */}
-        <div className="flex items-center gap-4 mb-4">
-          <label htmlFor="week-start" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Week Starting (Sunday):
-          </label>
-          <input
-            type="date"
-            id="week-start"
-            value={weekStartDate}
-            onChange={(e) => setWeekStartDate(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+        <div className="mb-4">
+          <div className="flex items-center gap-4">
+            <label htmlFor="week-start" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Select a Date:
+            </label>
+            <input
+              type="date"
+              id="week-start"
+              value={weekStartDate}
+              onChange={(e) => setWeekStartDate(e.target.value)}
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
 
-          <button
-            onClick={handleGenerate}
-            disabled={isGenerating || isSaving}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors"
-          >
-            {isGenerating ? 'Generating...' : 'Generate Week'}
-          </button>
+            <button
+              onClick={handleGenerate}
+              disabled={isGenerating || isSaving}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors"
+            >
+              {isGenerating ? 'Generating...' : 'Generate Week'}
+            </button>
+          </div>
+          <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Will generate plan for week: {formatWeekRange(getSundayOfWeek(weekStartDate))}
+          </div>
         </div>
 
         {/* Messages */}
@@ -235,6 +270,10 @@ export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlanne
       {/* Generated Meal Plan */}
       {generatedPlan && (
         <div className="printable-meal-plan">
+          <div className="print-title hidden">
+            <h1>Weekly Meal Plan</h1>
+            <h2>Week of {formatWeekRange(weekStartDate)}</h2>
+          </div>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold dark:text-white">Generated Meal Plan</h3>
             <div className="flex gap-2">
@@ -278,7 +317,7 @@ export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlanne
                   <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                     {day}
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  <div className="no-print text-xs text-gray-500 dark:text-gray-400 mb-2">
                     {formatDate(weekStartDate, index)}
                   </div>
 
@@ -319,7 +358,7 @@ export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlanne
                         )}
                       </div>
 
-                      <div className="text-xs text-gray-500 dark:text-gray-300 mb-3">
+                      <div className="no-print text-xs text-gray-500 dark:text-gray-300 mb-3">
                         Served {meal.timesServed}x
                         {meal.lastServedDate && (
                           <span className="block">
