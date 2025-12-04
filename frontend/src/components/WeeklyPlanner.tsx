@@ -79,7 +79,7 @@ export default function WeeklyPlanner({ onPlanSaved, editingPlan }: WeeklyPlanne
       }
 
       // Create the new/updated plan
-      const mealIds = generatedPlan.meals.map(m => m.id);
+      const mealIds = generatedPlan.meals.map(m => m?.id).filter((id): id is string => id !== undefined);
       await api.saveMealPlan(weekStartDate, mealIds);
       setSuccess(editingPlan ? 'Meal plan updated successfully!' : 'Meal plan saved successfully!');
       setGeneratedPlan(null);

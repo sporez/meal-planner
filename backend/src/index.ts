@@ -1,12 +1,13 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import { initializeDatabase } from './db/database';
 import categoriesRouter from './routes/categories';
 import mealsRouter from './routes/meals';
 import mealPlansRouter from './routes/mealPlans';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = parseInt(process.env.PORT || '3001', 10);
 
 // Initialize database
 initializeDatabase();
@@ -23,6 +24,15 @@ app.use('/api/meal-plans', mealPlansRouter);
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+// Serve static files from the frontend build
+const publicPath = path.join(__dirname, '../public');
+app.use(express.static(publicPath));
+
+// SPA fallback - serve index.html for all non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(publicPath, 'index.html'));
 });
 
 // Start server

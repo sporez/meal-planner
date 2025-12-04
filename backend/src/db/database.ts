@@ -2,8 +2,10 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const dbPath = path.join(process.cwd(), 'meal-planner.db');
+const dbPath = process.env.DB_PATH || path.join(process.cwd(), 'meal-planner.db');
 const db = new Database(dbPath);
+
+console.log(`Using database at: ${dbPath}`);
 
 // Enable foreign keys
 db.pragma('foreign_keys = ON');
@@ -36,8 +38,8 @@ export function initializeDatabase() {
 
   // Migration: Add has_leftovers column to existing meals table
   try {
-    const columns = db.pragma('table_info(meals)');
-    const hasLeftoversExists = columns.some((col: any) => col.name === 'has_leftovers');
+    const columns = db.pragma('table_info(meals)') as Array<{ name: string }>;
+    const hasLeftoversExists = columns.some((col) => col.name === 'has_leftovers');
 
     if (!hasLeftoversExists) {
       db.exec('ALTER TABLE meals ADD COLUMN has_leftovers INTEGER NOT NULL DEFAULT 0');
@@ -49,8 +51,8 @@ export function initializeDatabase() {
 
   // Migration: Add rating column to existing meals table
   try {
-    const columns = db.pragma('table_info(meals)');
-    const ratingExists = columns.some((col: any) => col.name === 'rating');
+    const columns = db.pragma('table_info(meals)') as Array<{ name: string }>;
+    const ratingExists = columns.some((col) => col.name === 'rating');
 
     if (!ratingExists) {
       db.exec('ALTER TABLE meals ADD COLUMN rating INTEGER CHECK(rating IS NULL OR (rating >= 1 AND rating <= 5))');

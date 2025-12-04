@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Category, CreateCategoryRequest } from '../types';
+import { Category } from '../types';
 import * as api from '../services/api';
 
 interface CategoryManagerProps {

@@ -1,6 +1,5 @@
 import {
   Category,
-  Meal,
   MealWithCategory,
   CreateMealRequest,
   UpdateMealRequest,
